@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     mon_address.sin_addr.s_addr = htonl(INADDR_ANY);
 
     /* creation du socket */
-    sock=socket(AF_INET,SOCK_STREAM,0));
+    sock=socket(AF_INET,SOCK_STREAM,0);
     if ((sock==-1)
     {
         printf("problème de création\n");
