@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
     /* bind serveur - socket */
     int ret;
     ret=bind(sock,(struct sockaddr *)&mon_address,sizeof(mon_address));
-    if(ret<0){
+    if(ret<0)
+    {
         printf("error\n");
     }
 
