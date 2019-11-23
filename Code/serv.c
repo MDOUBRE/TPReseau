@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         printf("problème de création\n");
         exit(0);
     }
-    signal(SIGINT,fin);
+    signal(SIGINT,"Fin");
     
 
     /* bind serveur - socket */
