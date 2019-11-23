@@ -7,10 +7,23 @@
 #include <sys/types.h> 
 #define MAX 80 
 #define PORT 8080 
+#define TAILLEMAX 100
 #define SA struct sockaddr 
   
+struct Dossier
+{
+    char nom[20];
+    struct Dossier[TAILLEMAX];
+    struct Fichier[TAILLEMAX];
+};
+
+struct Fichier
+{
+    char nom[20];
+};
+
 // Fonction de chat entre client et serveur
-void func(int sockfd) 
+void func(int sockfd, struct Dossier *tab) 
 { 
     char buffer[MAX]; 
     int n; 
@@ -36,7 +49,13 @@ void func(int sockfd)
         if (strncmp("exit", buffer, 4) == 0) { 
             printf("Server Exit...\n"); 
             break; 
-        }       
+        }   
+
+        // si le message contient ls alors affiche tous les dossieres et fichiers contenu dans le repertoire
+        if (strncmp("ls", buffer, 2) == 0) { 
+            printf("repertoires et fichiers...\n"); 
+            break; 
+        }   
     } 
 } 
 
@@ -45,6 +64,16 @@ int main()
 { 
     int sockfd, connfd, len; 
     struct sockaddr_in servaddr, cli; 
+
+    //creation d'un dossier test avec un fichier test à l'intérieur
+    struct Dossier *tabDoss=malloc(sizeof(int)*TAILLEMAX);
+    struct Dossier dossiertest;
+    dossiertest.nom="dossiertestnom";
+    struct Fichier fichiertest;
+    dossiertest.Fichier[0]=fichiertest;
+    fichiertest.nom="fichiertestnom";
+    tabDoss[0]=dossiertest;
+
   
     // création et vérification du socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0); 
@@ -88,7 +117,7 @@ int main()
         printf("Le serveur accepte le client...\n"); 
   
     // fonction de chat entre client et serveur 
-    func(connfd); 
+    func(connfd,tabDoss); 
   
     // Fermeture du socket après fin
     close(sockfd); 
