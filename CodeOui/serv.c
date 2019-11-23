@@ -10,17 +10,46 @@
 #define TAILLEMAX 100
 #define SA struct sockaddr 
   
-struct Dossier
-{
-    char nom[20];
-    struct Dossier[TAILLEMAX];
-    struct Fichier[TAILLEMAX];
-};
-
 struct Fichier
 {
-    char nom[20];
+    char *nom;
 };
+
+struct Dossier
+{
+    char *nom;
+    //struct Dossier[TAILLEMAX];
+    struct Fichier *tabfichier;
+};
+
+struct Fichier CreerFichier(char *tab){
+	struct Fichier fichier;
+	fichier.nom=tab;
+	return fichier;
+}
+
+struct Dossier CreerDossier(char *tab){
+	struct Dossier dossier;
+	dossier.nom=tab;
+	dossier.tabfichier=malloc(sizeof(int)*TAILLEMAX);
+	return dossier;
+}
+
+
+struct Fichier afficheFichier(struct Fichier fichier){
+	printf("%s\n",fichier.nom);
+}
+
+struct Dossier afficheDossier(struct Dossier dossier){
+	printf("%s\n",dossier.nom);
+	printf("%s\n",dossier.tabfichier[i].nom);
+	/*
+	for(int i=0;i<TAILLEMAX;i++)
+	{
+		printf("%s\n",dossier.tabfichier[i].nom);
+	}
+	*/
+}
 
 // Fonction de chat entre client et serveur
 void func(int sockfd, struct Dossier *tab) 
@@ -67,13 +96,11 @@ int main()
 
     //creation d'un dossier test avec un fichier test à l'intérieur
     struct Dossier *tabDoss=malloc(sizeof(int)*TAILLEMAX);
-    struct Dossier dossiertest;
-    dossiertest.nom="dossiertestnom";
-    struct Fichier fichiertest;
-    dossiertest.Fichier[0]=fichiertest;
-    fichiertest.nom="fichiertestnom";
-    tabDoss[0]=dossiertest;
-
+    struct Dossier dossiertest=CreerDossier("dossiertestnom");
+    struct Fichier fichiertest=CreerFichier("fichiertestnom");
+    dossiertest.tabfichier[0]=fichiertest;
+    afficheDossier(dossiertest);
+    afficheFichier(fichiertest);
   
     // création et vérification du socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0); 
