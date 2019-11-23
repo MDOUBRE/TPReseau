@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#define SERVEURNAME “192.168.1.106” // adresse IP de mon serveur (à changer)
+#define SERVEURNAME "192.168.1.106" // adresse IP de mon serveur (à changer)
 
 int to_server_socket = -1;
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         serverHostEnt = gethostbyname(SERVEURNAME);
         if (serverHostEnt == NULL)
         {
-            printf(“gethost rate\n”);
+            printf("gethost rate\n");
             exit(0);
         }
         bcopy(serverHostEnt->h_addr,&serverSockAddr.sin_addr,serverHostEnt->h_length);
@@ -44,19 +44,19 @@ int main(int argc, char *argv[])
     /* creation de la socket */
     if ( (to_server_socket = socket(AF_INET,SOCK_STREAM,0)) < 0)
     {
-        printf(“creation socket client ratee\n”);
+        printf("creation socket client ratee\n");
         exit(0);
     }
 
     /* requete de connexion */
     if(connect( to_server_socket,(struct sockaddr )&serverSockAddr,sizeof(serverSockAddr)) < 0 )
     {
-        printf(“demande de connection ratee\n”);
+        printf("demande de connection ratee\n");
         exit(0);
     }
 
     /* envoie de donne et reception */
-    write(to_server_socket,“Toto”,4);
+    write(to_server_socket,"Toto",4);
     read(to_server_socket,buffer,512);
     printf(buffer);
 
