@@ -22,11 +22,7 @@ void func(int sockfd)
         read(sockfd, buffer, sizeof(buffer)); 
         // print le buffer qui copntient le contenu du client
         printf("From client: %s\t To client : ", buffer); 
-        // si le message contient "Exit"alors le serveur quitte et end la connection 
-        if (strncmp("exit", buffer, 4) == 0) { 
-            printf("Server Exit...\n"); 
-            break; 
-        } 
+             
         bzero(buffer, MAX); 
         n = 0; 
         // copie le message du serveur dans le buffer 
@@ -34,7 +30,13 @@ void func(int sockfd)
             ; 
   
         // et envoie le buffer au client 
-        write(sockfd, buffer, sizeof(buffer));         
+        write(sockfd, buffer, sizeof(buffer));      
+
+        // si le message contient "Exit"alors le serveur quitte et end la connection 
+        if (strncmp("exit", buffer, 4) == 0) { 
+            printf("Server Exit...\n"); 
+            break; 
+        }       
     } 
 } 
 
