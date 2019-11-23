@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     struct sockaddr_in mon_address, client_address;
 
-    bzero(&mon_address,sizeof(mon_address));    //met à 0 tous les octets de mon_address
+    memset(mon_address,0,sizeof(mon_address));    //met à 0 tous les octets de mon_address
     mon_address.sin_port = htons(30000);        //port 30000
     mon_address.sin_family = AF_INET;
     mon_address.sin_addr.s_addr = htonl(INADDR_ANY);

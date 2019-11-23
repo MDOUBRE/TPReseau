@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     }
 
     /* requete de connexion */
-    if(connect( to_server_socket,(struct sockaddr )&serverSockAddr,sizeof(serverSockAddr)) < 0 )
+    if(connect( to_server_socket,(struct sockaddr* )&serverSockAddr,sizeof(serverSockAddr)) < 0 )
     {
         printf("demande de connection ratee\n");
         exit(0);
