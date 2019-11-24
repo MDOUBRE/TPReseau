@@ -81,26 +81,131 @@ struct Dossier ajouteFichier(struct Dossier dossier, struct Fichier fichier){
 	return dossier;
 }
 
+// Donne le nom du dossier destination à parti de la commande rentrée
+char* getDestination(char *tab){
+	char tabcd[2];
+	char *destination=malloc(sizeof(int)*20);
+	char lettre;
+	int i=0;
+	int j=0;
+	while(i!=80)
+	{
+		if(tab[i]=='c' && tab[i+1]=='d' && tab[i+2]==' ')
+		{
+			tabcd[0]=tab[i];
+			i=i+1;
+			tabcd[1]=tab[i];
+			i=i+2;
+			while(tab[i]!=' ')
+			{
+				destination[j]=tab[i];
+				i++;
+				j++;
+			}
+			break;
+		}
+		i++;
+	}
+	printf("%s\n",destination);
+	return destination;	
+}
+
+// Remplace dans dossEnCours par le dossier destination demandé
+struct Dossier changeDossEnCours(struct Dossier dossier){
+	struct Dossier changement=CreerDossier("changement");
+	changement.nom=dossier.nom;
+	changement.nbfic=dossier.nbfic;
+	changement.nbdoss=dossier.nbdoss;
+	changement.tabdossier=dossier.tabdossier;
+	changement.tabfichier=dossier.tabfichier;
+	printf("le nom changé est : %s\n",changement.nom);
+	return changement;
+}
+
+/*
+int compare(char *tab, char *tab2){
+	int i=0;
+	int result=0;
+	while(i!=80){
+		if(tab[i]!=tab2[i]){
+			result=-1;
+		}	
+		i++;
+	}
+	return result;
+}
+*/
+
+// Cherche le dossier demandé tmp dans dans le dossier en cours dossEnCours
+int chercheDoss(struct Dossier dossEnCours,char *tmp)
+{
+	int result=-1;
+	int i;
+	char *tmp2;
+	printf("le dossEnCours est %s\n",dossEnCours.nom);
+	printf("%s a %d dossiers\n",dossEnCours.nom,dossEnCours.nbdoss);
+	for(i=0;i<dossEnCours.nbdoss;i++)
+	{
+		printf("on est dans le for\n");
+		tmp2=dossEnCours.tabdossier[i].nom;
+		printf("tmp2 : %s\n",tmp2);
+		printf("tmp : %s\n",tmp);
+		//a vérifier car ne fait pas la comparaison ou du moins ne renvoie pas 0 alors que devrait
+		if(strcmp(tmp,tmp2)==0)
+		{
+			printf("on est dans result\n");
+			result=0;
+		}
+	}
+	printf("result=%d\n",result);
+	return result;
+}
+
+// Renvoie le dossier demandé tmp à parti du dossier en cours dossEnCours
+struct Dossier donneDoss(struct Dossier dossEnCours,char *tmp){
+	int i=0;
+	char *tmp2;
+	
+	for(i=0;i<dossEnCours.nbdoss;i++)
+	{
+		tmp2=dossEnCours.tabdossier[i].nom;
+		printf("tmp2 : %s\n",tmp2);
+		if(tmp2==tmp)
+		{
+			return dossEnCours.tabdossier[i];
+		}
+	}
+	return dossEnCours;
+}
+
+
 // Fonction de chat entre client et serveur
 void func(int sockfd) 
 { 
     char buffer[MAX]; 
-    int n; 
+    int n;
+    
+    
     
     //Création de notre dossier Racine
     struct Dossier Racine=CreerDossier("Racine");
     //enlever les /**/ en dessous pour que le ls n'affiche pas "vide"
-    /*
+    
     struct Fichier fichiertest=CreerFichier("fichiertest");
     Racine=ajouteFichier(Racine,fichiertest);
     struct Dossier SousRacine=CreerDossier("SousRacine");
     Racine=ajouteDossier(Racine,SousRacine);
-    */
+    
+    
+    struct Dossier dossEnCours;
+    dossEnCours=CreerDossier("dossEnCours");
+    dossEnCours=changeDossEnCours(Racine);
     
     // boucle infinie 
     while (1) { 
-        bzero(buffer, MAX); 
-  
+        bzero(buffer, MAX);
+        char *tmp;
+          
         // lit le message du client et le copie dans le buffer 
         read(sockfd, buffer, sizeof(buffer)); 
         // print le buffer qui copntient le contenu du client
@@ -117,7 +222,19 @@ void func(int sockfd)
 
         // si le message contient ls alors affiche tous les dossieres et fichiers contenu dans le repertoire
         if (strncmp("ls", buffer, 2) == 0) { 
-            afficheDossier(Racine);
+            afficheDossier(dossEnCours);
+        }  
+        
+        // si le message contient cd alors vérifie le chemin et va dans le dossier souhaité
+        if (strncmp("cd", buffer, 2) == 0) { 
+            tmp=getDestination(buffer);
+            printf("la destination est %s\n",tmp);
+            if(chercheDoss(dossEnCours,tmp)==0){
+            	dossEnCours=changeDossEnCours(donneDoss(dossEnCours,tmp));
+            }
+            else{
+            	printf("Vous ne pouvez pas accéder à ce dossier à partir de %s\n",dossEnCours.nom);	
+            }
         }  
         
         // si le message contient "Exit"alors le serveur quitte et end la connection 
