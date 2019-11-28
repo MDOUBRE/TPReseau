@@ -1,11 +1,12 @@
 #include <stdio.h> 
 #include <netdb.h> 
+#include <unistd.h>
 #include <netinet/in.h> 
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h> 
 #include <sys/socket.h> 
 #include <sys/types.h> 
-#define MAX 80 
+#define MAX 500 
 #define PORT 8080 
 #define TAILLEMAX 100
 #define SA struct sockaddr 
@@ -42,32 +43,34 @@ struct Dossier CreerDossier(char *tab){
 }
 
 //Affiche le contenu du dossier (dossiers et fichiers)
-struct Dossier afficheDossier(struct Dossier dossier){
+char* afficheDossier(struct Dossier dossier){
+	return "lebonls";
 	int i=0;
-	printf("%s :\n",dossier.nom);
-	
+	char chaineARenvoi[MAX];
+	sprintf(chaineARenvoi,"%s :\n",dossier.nom);
 	if(dossier.nbfic==0 && dossier.nbdoss==0)
 	{
-		printf("le dossier %s est vide.\n",dossier.nom);
+		sprintf(chaineARenvoi,"%s le dossier %s est vide.\n",chaineARenvoi, dossier.nom);
 	}
 	else
 	{	
 		for(i=0;i<dossier.nbdoss;i++)
 		{
-			printf("-%s\n",dossier.tabdossier[i].nom);
+			sprintf(chaineARenvoi,"%s -%s\n",chaineARenvoi,dossier.tabdossier[i].nom);
 		}
 		for(i=0;i<dossier.nbfic;i++)
 		{
-			printf("-%s\n",dossier.tabfichier[i].nom);
+			sprintf(chaineARenvoi,"%s -%s\n",chaineARenvoi,dossier.tabfichier[i].nom);
 		}
 	}
+	return chaineARenvoi;
 }
 
 //fct papa pour le dossier2 qui lui met le dossier1 comme parent quand on crée un dossier2 dans un dossier 1
 
 //Ajoute un fichier dans un dossier et incrémente le nombre de fichiers de la strcucture du dossier
 struct Dossier ajouteDossier(struct Dossier dossier1, struct Dossier dossier2){
-	int i;
+	//int i;
 	dossier1.tabdossier[dossier1.nbdoss]=dossier2;
 	dossier1.nbdoss=dossier1.nbdoss+1;
 	return dossier1;
@@ -75,7 +78,7 @@ struct Dossier ajouteDossier(struct Dossier dossier1, struct Dossier dossier2){
 
 //Ajoute un fichier dans un dossier et incrémente le nombre de fichiers de la strcucture du dossier
 struct Dossier ajouteFichier(struct Dossier dossier, struct Fichier fichier){
-	int i;
+	//int i;
 	dossier.tabfichier[dossier.nbfic]=fichier;
 	dossier.nbfic=dossier.nbfic+1;
 	return dossier;
@@ -85,7 +88,7 @@ struct Dossier ajouteFichier(struct Dossier dossier, struct Fichier fichier){
 char* getDestination(char *tab){
 	char tabcd[2];
 	char *destination=malloc(sizeof(int)*20);
-	char lettre;
+	//char lettre;
 	int i=0;
 	int j=0;
 	while(i!=80)
@@ -183,9 +186,7 @@ struct Dossier donneDoss(struct Dossier dossEnCours,char *tmp){
 void func(int sockfd) 
 { 
     char buffer[MAX]; 
-    int n;
-    
-    
+    //int n;
     
     //Création de notre dossier Racine
     struct Dossier Racine=CreerDossier("Racine");
@@ -205,43 +206,56 @@ void func(int sockfd)
     while (1) { 
         bzero(buffer, MAX);
         char *tmp;
-          
         // lit le message du client et le copie dans le buffer 
         read(sockfd, buffer, sizeof(buffer)); 
         // print le buffer qui copntient le contenu du client
-        printf("From client: %s\n To client : ", buffer); 
-             
-        bzero(buffer, MAX); 
-        n = 0; 
-        // copie le message du serveur dans le buffer 
-        while ((buffer[n++] = getchar()) != '\n') 
-            ; 
-  
-        // et envoie le buffer au client 
-        write(sockfd, buffer, sizeof(buffer));      
-
-        // si le message contient ls alors affiche tous les dossieres et fichiers contenu dans le repertoire
-        if (strncmp("ls", buffer, 2) == 0) { 
-            afficheDossier(dossEnCours);
-        }  
-        
+        printf("bonsoir");
+        fflush(stdout); //gros segfault ici si on  remet le printf ?
         // si le message contient cd alors vérifie le chemin et va dans le dossier souhaité
         if (strncmp("cd", buffer, 2) == 0) { 
             tmp=getDestination(buffer);
             printf("la destination est %s\n",tmp);
             if(chercheDoss(dossEnCours,tmp)==0){
             	dossEnCours=changeDossEnCours(donneDoss(dossEnCours,tmp));
+            	//efface le buffer
+				bzero(buffer, MAX);
+				sprintf(buffer,"dosier changee : %s",dossEnCours.nom);
+            	write(sockfd, buffer, sizeof(buffer));
             }
             else{
-            	printf("Vous ne pouvez pas accéder à ce dossier à partir de %s\n",dossEnCours.nom);	
+            	//efface le buffer
+				bzero(buffer, MAX);
+				sprintf("Vous ne pouvez pas accéder à ce dossier à partir de %s\n",dossEnCours.nom);	
+            	write(sockfd, buffer, sizeof(buffer));
             }
         }  
+        // si le message contient ls alors affiche tous les dossieres et fichiers contenu dans le repertoire
+        if (strncmp("ls", buffer, 2) == 0) { 
+			//efface le buffer
+			bzero(buffer, MAX);
+            sprintf(buffer,"%s",afficheDossier(dossEnCours));
+            write(sockfd, buffer, sizeof(buffer));
+        }
+        
+        //efface le buffer
+        
+        /*
+        bzero(buffer, MAX); 
+        n = 0; 
+        // copie le message du serveur dans le buffer 
+        while ((buffer[n++] = getchar()) != '\n'); 
+  
+        // et envoie le buffer au client 
+        write(sockfd, buffer, sizeof(buffer));      
+
+        
         
         // si le message contient "Exit"alors le serveur quitte et end la connection 
         if (strncmp("exit", buffer, 4) == 0) { 
             printf("Server Exit...\n"); 
             break; 
         }   
+        */
          
     } 
 } 
