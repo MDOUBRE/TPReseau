@@ -160,7 +160,7 @@ void func(int sockfd)
 			write(sockfd, buffer, sizeof(buffer));
 		}
 		
-		// met uin fichier dans le dossier en cours
+		// met un fichier dans le dossier en cours
 		if ((strncmp(buffer, "put", 3)) == 0) { 
 			printf("yo tu veux rajouter un fichier\n"); 
             char namefile[MAX];
