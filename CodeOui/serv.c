@@ -186,6 +186,7 @@ void func(int sockfd)
 { 
     char buffer[MAX]; 
     //int n;
+    FILE *f;
     
     //Création de notre dossier Racine
     struct Dossier Racine=CreerDossier("Racine");
@@ -242,6 +243,44 @@ void func(int sockfd)
         if (strncmp("liste", buffer, 4) == 0) { 
 			bzero(buffer, MAX);
 			strcat(buffer,"liste des commandes\n-ls\n-cd\n-pwd\n-get nomfichier\nput nomfichier\n");
+			write(sockfd, buffer, sizeof(buffer));
+		}
+		
+		if ((strncmp(buffer, "put", 3)) == 0) { 
+			printf("yo tu veux telecharger un fichier\n"); 
+            char namefile[25];
+            int i=4;
+            for(i=4;i<strlen(buffer);i++){ // on recupere le nom du fichier
+				namefile[i-3]=buffer[i];
+			}
+			printf("%s\n",namefile);
+            if((f = fopen(namefile,"w"))==NULL){
+				printf("impossible d'ouvrir le fichier en ecriture");
+				break;
+			}
+			read(sockfd, buffer, MAX); 
+			fprintf(f,"%s",buffer);
+			fclose(f);
+			bzero(buffer, MAX);
+			strcat(buffer,"ecriture succesfull\n");
+			write(sockfd, buffer, sizeof(buffer));
+		}
+        
+        if ((strncmp(buffer, "get", 3)) == 0) { 
+            printf("yo tu veux rajouter un fichier\n"); 
+            char namefile[25];
+            int i=4;
+            for(i=4;i<strlen(buffer);i++){ // on recupere le nom du fichier
+				namefile[i-3]=buffer[i];
+			}
+			printf("%s\n",namefile);
+            if((f = fopen(namefile,"r"))==NULL){
+				printf("impossible d'ouvrir le fichier en lecture");
+				break;
+			}
+			bzero(buffer, MAX);
+			//write(sockfd, buff, sizeof(buff)); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
+			fscanf(f,"%s",buffer); // on met le fichier dans le buffer qui sera envoyer par la suite
 			write(sockfd, buffer, sizeof(buffer));
 		}
         
