@@ -37,7 +37,7 @@ void getNameFile(char* reponse, char* message, int nbCharAOublier){
 
 void func(int sockfd) 
 { 
-char buff[MAX]; 
+    char buff[MAX]; 
     FILE *f;
     int n;
     int lecture=0;
