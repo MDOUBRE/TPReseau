@@ -66,8 +66,8 @@ void func(int sockfd)
 			write(sockfd, buff, MAX); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
 			while(fgets(buff,MAX,f)!=NULL){
 				printf("oui\n");
-				bzero(buff, MAX); 
 				write(sockfd, buff, MAX);
+				bzero(buff, MAX); 
 			} 
 			bzero(buff, MAX);
 			strcat(buff,"fin");
