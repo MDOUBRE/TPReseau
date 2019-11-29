@@ -207,6 +207,50 @@ char *listdir(const char *path)
 	return tab;
 }
 
+int testApart(char* name, char* path){
+	struct dirent *entry;
+	DIR *dp;
+	int retour=-1;
+	int i=0;
+	dp=opendir(path);
+	if(dp==NULL)
+	{
+		perror("opendir");
+	}
+	printf("name pas a pas \n");
+	while(i<strlen(name)){
+		printf("%c\n",name[i]);
+		i++;
+	}
+	while((entry=readdir(dp)))
+	{
+		if(strcmp(entry->d_name,name)==0){
+			retour=0;
+			printf("je suis passé\n");
+		}
+		printf("truc pas a pas \n");
+		i=0;
+		while(i<strlen(entry->d_name)){
+			printf("%c\n",entry->d_name[i]);
+			i++;
+		}
+		printf("entry dname : %s\n",entry->d_name);
+		printf("name : %s\n",name);
+	}
+	
+	closedir(dp);
+	return retour;
+}
+
+void getNameFile(char* reponse, char* message, int nbCharAOublier){
+	int i=nbCharAOublier;
+	while(i<strlen(message) && message[i]!='\0' && message[i]!=' '){ // on recupere le nom du fichier
+		reponse[i-nbCharAOublier]=message[i];
+		i++;
+	}
+	reponse[strlen(reponse)-1]='\0';
+	printf("longueur message : %d\n",strlen(reponse));
+}
 
 // Fonction de chat entre client et serveur
 void func(int sockfd) 
@@ -214,7 +258,7 @@ void func(int sockfd)
 
     char buffer[MAX]; 
     FILE *f;
-
+	char path[MAX]=".";
     //Création de notre dossier Racine
     /*
     struct Dossier Racine=CreerDossier("Racine");    
@@ -244,7 +288,16 @@ void func(int sockfd)
 		// si le message contient cd alors vérifie le chemin et va dans le dossier souhaité
         if (strncmp("cd", buffer, 2) == 0) { 
         	printf("buffer : %s\n",buffer);
-            
+        	char namefile[MAX];
+            getNameFile(namefile,buffer,3);
+			if(testApart(namefile,path)==0){
+				strcat(path,"/");
+				strcat(path,namefile);
+			}
+			bzero(buffer, MAX);
+			printf("ici le path : %s\n",path);
+			strcat(buffer,"cd fait\n");
+			write(sockfd, buffer, sizeof(buffer));
             /*
             tmp=getDestination(buffer);
             printf("la destination est %s\n",tmp);
@@ -268,7 +321,7 @@ void func(int sockfd)
         if (strncmp("ls", buffer, 2) == 0) { 
 			//efface le buffer
 			bzero(buffer, MAX);
-            tmp=listdir(".");
+            tmp=listdir(path);
             sprintf(buffer,tmp,MAX);
             write(sockfd, buffer, sizeof(buffer));
         }
@@ -281,7 +334,7 @@ void func(int sockfd)
 		
 		if ((strncmp(buffer, "put", 3)) == 0) { 
 			printf("yo tu veux telecharger un fichier\n"); 
-            char namefile[25];
+            char namefile[MAX];
             int i=4;
             for(i=4;i<strlen(buffer);i++){ // on recupere le nom du fichier
 				namefile[i-3]=buffer[i];
@@ -301,7 +354,7 @@ void func(int sockfd)
         
         if ((strncmp(buffer, "get", 3)) == 0) { 
             printf("yo tu veux rajouter un fichier\n"); 
-            char namefile[25];
+            char namefile[MAX];
             int i=4;
             for(i=4;i<strlen(buffer);i++){ // on recupere le nom du fichier
 				namefile[i-3]=buffer[i];
