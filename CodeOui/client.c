@@ -11,21 +11,24 @@
 
 void func(int sockfd) 
 { 
-    char buff[MAX]; 
+    char *buff;
+    buff=malloc(sizeof(int)*MAX); 
     FILE *f;
     int n;
     char c;
-    int lecture=0; 
+    int lecture=0;
+    int ouvert=0;
+
     while(1) { 
-        bzero(buff, sizeof(buff)); 
-        printf("Entrer une commande (liste pour la liste des commandes) : "); 
+        bzero(buff, MAX); 
+        printf("Entrer une commande (liste pour la liste des commandes) : \n"); 
         n = 0; 
-        printf("test-2");
-        //while ((buff[n++] = getchar()) != '\n'); //gros seg fault la j'ai essayee ce qu'on avait de base le scanf le fgets de malloc le buff aussi
-        scanf("%s\n",buff);
         
-        printf("test-1");
+        //while ((buff[n++] = getchar()) != '\n'); //gros seg fault la j'ai essayee ce qu'on avait de base le scanf le fgets de malloc le buff aussi
+        while ((buff[n++] = getchar()) != '\n');
+
         if ((strncmp(buff, "put", 3)) == 0) { 
+            ouvert=1;
             printf("yo tu veux rajouter un fichier\n"); 
             char namefile[25];
             int i=4;
@@ -40,9 +43,11 @@ void func(int sockfd)
 			write(sockfd, buff, sizeof(buff)); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
 			fscanf(f,"%s",buff); // on met le fichier dans le buffer qui sera envoyer par la suite
         }
-        printf("test");
-        write(sockfd, buff, sizeof(buff));
+
+        write(sockfd, buff, MAX);
+
         if ((strncmp(buff, "get", 3)) == 0) { 
+            ouvert=1;
 			printf("yo tu veux telecharger un fichier\n"); 
 			lecture=1;
             char namefile[25];
@@ -56,17 +61,19 @@ void func(int sockfd)
 				break;
 			}
 		}
-        bzero(buff, sizeof(buff));
-        printf("test2");
-        read(sockfd, buff, sizeof(buff));
-        printf("test3");
+
+        bzero(buff, MAX);
+
+        read(sockfd, buff, MAX);
         if(lecture==1){
 			fprintf(f,"%s",buff); // on créé le fichier a partir du buffer
 			lecture=0;
 		}
-		fclose(f);
-		printf("test4");
-        printf("Reponse du serveur : %s", buff);
+        if(ouvert==1){
+		    fclose(f);
+            ouvert=0;
+        }
+        printf("Reponse du serveur :\n %s\n", buff);
         if ((strncmp(buff, "exit", 4)) == 0) { 
             printf("Client Exit...\n"); 
             break; 

@@ -43,10 +43,8 @@ struct Dossier CreerDossier(char *tab){
 }
 
 //Affiche le contenu du dossier (dossiers et fichiers)
-char* afficheDossier(struct Dossier dossier){
-	return "lebonls";
+void afficheDossier(struct Dossier dossier, char* chaineARenvoi){
 	int i=0;
-	char chaineARenvoi[MAX];
 	sprintf(chaineARenvoi,"%s :\n",dossier.nom);
 	if(dossier.nbfic==0 && dossier.nbdoss==0)
 	{
@@ -63,7 +61,7 @@ char* afficheDossier(struct Dossier dossier){
 			sprintf(chaineARenvoi,"%s -%s\n",chaineARenvoi,dossier.tabfichier[i].nom);
 		}
 	}
-	return chaineARenvoi;
+	printf("%s\n",chaineARenvoi);
 }
 
 //fct papa pour le dossier2 qui lui met le dossier1 comme parent quand on crée un dossier2 dans un dossier 1
@@ -206,12 +204,15 @@ void func(int sockfd)
     while (1) { 
         bzero(buffer, MAX);
         char *tmp;
-        // lit le message du client et le copie dans le buffer 
-        read(sockfd, buffer, sizeof(buffer)); 
-        // print le buffer qui copntient le contenu du client
+        
+		// lit le message du client et le copie dans le buffer 
+        read(sockfd, buffer, MAX); 
+        
+		// print le buffer qui copntient le contenu du client
         printf("bonsoir");
         fflush(stdout); //gros segfault ici si on  remet le printf ?
-        // si le message contient cd alors vérifie le chemin et va dans le dossier souhaité
+        
+		// si le message contient cd alors vérifie le chemin et va dans le dossier souhaité
         if (strncmp("cd", buffer, 2) == 0) { 
             tmp=getDestination(buffer);
             printf("la destination est %s\n",tmp);
@@ -233,7 +234,7 @@ void func(int sockfd)
         if (strncmp("ls", buffer, 2) == 0) { 
 			//efface le buffer
 			bzero(buffer, MAX);
-            sprintf(buffer,"%s",afficheDossier(dossEnCours));
+            afficheDossier(dossEnCours,buffer);
             write(sockfd, buffer, sizeof(buffer));
         }
         
@@ -294,7 +295,7 @@ int main()
     servaddr.sin_family = AF_INET; 
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY); 
     servaddr.sin_port = htons(PORT); 
-  
+	
     // Bind le socket pour donner l'IP et la verification 
     if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 
         printf("le bind de la socket a échoué...\n"); 
