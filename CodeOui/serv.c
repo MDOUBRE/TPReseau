@@ -360,6 +360,8 @@ void func(int sockfd)
 			printf("yo tu veux telecharger un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
+            bzero(namefile, MAX); 
+            bzero(dest, MAX); 
             getNameFile(namefile,buffer,4);
             strcpy(dest,path);
             strcat(dest,"/");
@@ -370,7 +372,12 @@ void func(int sockfd)
 				break;
 			}
 			read(sockfd, buffer, MAX); 
-			fprintf(f,"%s",buffer);
+			while((strncmp(buffer, "fin", 3)) != 0){
+				fputs(buffer,f);
+				printf("oui\n");
+				bzero(buffer, MAX);
+				read(sockfd, buffer, MAX);
+			}
 			fclose(f);
 			bzero(buffer, MAX);
 			strcat(buffer,"ecriture succesfull\n");
@@ -381,6 +388,8 @@ void func(int sockfd)
             printf("yo tu veux rajouter un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
+            bzero(namefile, MAX); 
+            bzero(dest, MAX); 
             getNameFile(namefile,buffer,4);
             strcpy(dest,path);
             strcat(dest,"/");

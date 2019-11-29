@@ -55,23 +55,30 @@ char buff[MAX];
             ouvert=1;
             printf("yo tu veux rajouter un fichier\n"); 
             char namefile[MAX];
+            bzero(namefile, MAX); 
             getNameFile(namefile,buff,4);
 			printf("%s\n",namefile);
+			printf("oui\n");
             if((f = fopen(namefile,"r"))==NULL){
 				printf("impossible d'ouvrir le fichier en lecture");
 				break;
 			}
 			write(sockfd, buff, MAX); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
-			fscanf(f,"%s",buff); // on met le fichier dans le buffer qui sera envoyer par la suite
+			while(fgets(buff,MAX,f)!=NULL){
+				printf("oui\n");
+				bzero(buff, MAX); 
+				write(sockfd, buff, MAX);
+			} 
+			bzero(buff, MAX);
+			strcat(buff,"fin");
         }
-
         write(sockfd, buff, MAX);
-
         if ((strncmp(buff, "get", 3)) == 0) { 
             ouvert=1;
 			printf("yo tu veux telecharger un fichier\n"); 
 			lecture=1;
             char namefile[MAX];
+            bzero(namefile, MAX); 
             getNameFile(namefile,buff,4);
 			printf("%s\n",namefile);
             if((f = fopen(namefile,"w"))==NULL){
