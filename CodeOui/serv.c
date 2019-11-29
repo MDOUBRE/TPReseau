@@ -13,178 +13,6 @@
 #define TAILLEMAX 100
 #define SA struct sockaddr 
   
-/*  
-struct Fichier
-{
-    char *nom;
-};
-
-struct Dossier
-{
-    char *nom;
-    int nbfic;
-    int nbdoss;
-    struct Dossier *tabdossier;
-    struct Fichier *tabfichier;
-    //struct Dossier papa;
-};
-
-struct Fichier CreerFichier(char *tab){
-	struct Fichier fichier;
-	fichier.nom=tab;
-	return fichier;
-}
-
-struct Dossier CreerDossier(char *tab){
-	struct Dossier dossier;
-	dossier.nom=tab;
-	dossier.nbfic=0;
-	dossier.nbdoss=0;
-	dossier.tabdossier=malloc(sizeof(int)*MAX);
-	dossier.tabfichier=malloc(sizeof(int)*MAX);
-	return dossier;
-}
-
-//Affiche le contenu du dossier (dossiers et fichiers)
-void afficheDossier(struct Dossier dossier, char* chaineARenvoi){
-	int i=0;
-	sprintf(chaineARenvoi,"%s :\n",dossier.nom);
-	if(dossier.nbfic==0 && dossier.nbdoss==0)
-	{
-		sprintf(chaineARenvoi,"%s le dossier %s est vide.\n",chaineARenvoi, dossier.nom);
-	}
-	else
-	{	
-		for(i=0;i<dossier.nbdoss;i++)
-		{
-			sprintf(chaineARenvoi,"%s -%s\n",chaineARenvoi,dossier.tabdossier[i].nom);
-		}
-		for(i=0;i<dossier.nbfic;i++)
-		{
-			sprintf(chaineARenvoi,"%s -%s\n",chaineARenvoi,dossier.tabfichier[i].nom);
-		}
-	}
-	printf("%s\n",chaineARenvoi);
-}
-
-
-//fct papa pour le dossier2 qui lui met le dossier1 comme parent quand on crée un dossier2 dans un dossier 1
-
-//Ajoute un fichier dans un dossier et incrémente le nombre de fichiers de la strcucture du dossier
-struct Dossier ajouteDossier(struct Dossier dossier1, struct Dossier dossier2){
-	//int i;
-	dossier1.tabdossier[dossier1.nbdoss]=dossier2;
-	dossier1.nbdoss=dossier1.nbdoss+1;
-	return dossier1;
-}
-
-//Ajoute un fichier dans un dossier et incrémente le nombre de fichiers de la strcucture du dossier
-struct Dossier ajouteFichier(struct Dossier dossier, struct Fichier fichier){
-	//int i;
-	dossier.tabfichier[dossier.nbfic]=fichier;
-	dossier.nbfic=dossier.nbfic+1;
-	return dossier;
-}
-*/
-
-// Donne le nom du dossier destination à parti de la commande rentrée
-char* getDestination(char *tab){
-	//char tabcd[2];
-	//char lettre;
-	
-	char *destination=malloc(sizeof(int)*MAX);
-	int i=3;
-	//int j=0;
-	while(i!=MAX)
-	{
-		destination[i-3]=tab[i];
-		i=i+1;
-	}
-	printf("%s\n",destination);
-	return destination;	
-}
-
-// Remplace dans dossEnCours par le dossier destination demandé
-/*
-struct Dossier changeDossEnCours(struct Dossier dossier){
-	struct Dossier changement=CreerDossier("changement");
-	changement.nom=dossier.nom;
-	changement.nbfic=dossier.nbfic;
-	changement.nbdoss=dossier.nbdoss;
-	changement.tabdossier=dossier.tabdossier;
-	changement.tabfichier=dossier.tabfichier;
-	printf("le nom changé est : %s\n",changement.nom);
-	return changement;
-}
-*/
-
-
-int compare(char *tab, char *tab2){
-	int i=0;
-	int j=0;
-	int result=-1;
-	for(i=0;i<20;i++){
-		printf("%c - %c\n",tab[i],tab2[i]);
-		if(tab[i]==tab2[i]){
-				result=0;
-		}
-		else
-		{
-			result=-1;
-		}
-	}
-	return result;
-}
-
-
-// Cherche le dossier demandé tmp dans dans le dossier en cours dossEnCours
-/*
-int chercheDoss(struct Dossier dossEnCours,char *tmp)
-{
-	int result=-1;
-	int i;
-	char *tmp2=malloc(sizeof(int)*MAX);
-	printf("le dossEnCours est %s\n",dossEnCours.nom);
-	printf("%s a %d dossiers\n",dossEnCours.nom,dossEnCours.nbdoss);
-	for(i=0;i<dossEnCours.nbdoss;i++)
-	{
-		printf("on est dans le for\n");
-		tmp2=dossEnCours.tabdossier[i].nom;
-		printf("tmp2 : %s\n",tmp2);
-		printf("tmp : %s\n",tmp);
-		//a vérifier car ne fait pas la comparaison ou du moins ne renvoie pas 0 alors que devrait
-		int coucou=compare(tmp,tmp2);
-		printf("comparaison : %d\n",coucou);
-		if(compare(tmp,tmp2)==0)
-		{
-			printf("on est dans result\n");
-			result=0;
-		}
-	}
-	printf("result=%d\n",result);
-	return result;
-}
-*/
-
-// Renvoie le dossier demandé tmp à parti du dossier en cours dossEnCours
-/*
-struct Dossier donneDoss(struct Dossier dossEnCours,char *tmp){
-	int i=0;
-	char *tmp2;
-	
-	for(i=0;i<dossEnCours.nbdoss;i++)
-	{
-		tmp2=dossEnCours.tabdossier[i].nom;
-		printf("tmp2 : %s\n",tmp2);
-		if(strcmp(tmp,tmp2)==0)
-		{
-			return dossEnCours.tabdossier[i];
-		}
-	}
-	return dossEnCours;
-}
-*/
-
 char *listdir(const char *path)
 {
 	struct dirent *entry;
@@ -207,6 +35,7 @@ char *listdir(const char *path)
 	return tab;
 }
 
+// test d'appartenance d'un dossier au celui dna slequel on est
 int testApart(char* name, char* path){
 	struct dirent *entry;
 	DIR *dp;
@@ -242,6 +71,7 @@ int testApart(char* name, char* path){
 	return retour;
 }
 
+// fct pour supprimer les espaces
 void removespace(char* line){
     int i, j;
     for(i = 0; line[i] != '\0'; ++i)
@@ -257,6 +87,7 @@ void removespace(char* line){
     }
 }
 
+// fct pour obtenir le nom d'un fichier
 void getNameFile(char* reponse, char* message, int nbCharAOublier){
 	int i=nbCharAOublier;
 	while(i<strlen(message) && message[i]!='\0' && message[i]!=' '){ // on recupere le nom du fichier
@@ -269,28 +100,16 @@ void getNameFile(char* reponse, char* message, int nbCharAOublier){
 
 
 
-// Fonction de chat entre client et serveur
+
+// Fonction de réponse du serveur
 void func(int sockfd) 
 { 
 
     char buffer[MAX]; 
     FILE *f;
 	char path[MAX]=".";
-    //Création de notre dossier Racine
-    /*
-    struct Dossier Racine=CreerDossier("Racine");    
-    struct Fichier fichiertest=CreerFichier("fichiertest");
-    Racine=ajouteFichier(Racine,fichiertest);
-    struct Dossier SousRacine=CreerDossier("SousRacine");
-    Racine=ajouteDossier(Racine,SousRacine);
         
-    struct Dossier dossEnCours;
-    dossEnCours=CreerDossier("dossEnCours");
-    dossEnCours=changeDossEnCours(Racine);
-    
-    */
-    
-    // boucle infinie 
+    // boucle infinie pour l'execution du programme
     while (1) { 
         bzero(buffer, MAX);
         char *tmp=malloc(sizeof(int)*MAX);
@@ -315,23 +134,6 @@ void func(int sockfd)
 			printf("ici le path : %s\n",path);
 			strcat(buffer,"cd fait\n");
 			write(sockfd, buffer, sizeof(buffer));
-            /*
-            tmp=getDestination(buffer);
-            printf("la destination est %s\n",tmp);
-            if(chercheDoss(dossEnCours,tmp)==0){
-            	dossEnCours=changeDossEnCours(donneDoss(dossEnCours,tmp));
-            	//efface le buffer
-				bzero(buffer, MAX);
-				sprintf(buffer,"dosier changee : %s",dossEnCours.nom);
-            	write(sockfd, buffer, sizeof(buffer));
-            }
-            else{
-            	//efface le buffer
-				bzero(buffer, MAX);
-				sprintf(buffer,"Vous ne pouvez pas accéder à ce dossier à partir de %s\n",dossEnCours.nom);	
-            	write(sockfd, buffer, sizeof(buffer));
-            }
-            */
         }  
         
         // si le message contient ls alors affiche tous les dossieres et fichiers contenu dans le repertoire
@@ -343,12 +145,14 @@ void func(int sockfd)
             write(sockfd, buffer, sizeof(buffer));
         }
         
+		// renvoie la liste des commandes
         if (strncmp("liste", buffer, 4) == 0) { 
 			bzero(buffer, MAX);
 			strcat(buffer,"liste des commandes\n-ls\n-cd\n-pwd\n-get nomfichier\nput nomfichier\n");
 			write(sockfd, buffer, sizeof(buffer));
 		}
 		
+		// renvoie le dossier dans lequel on est
 		if (strncmp("pwd", buffer, 3) == 0) { 
 			bzero(buffer, MAX);
 			strcat(buffer,path);
@@ -356,8 +160,9 @@ void func(int sockfd)
 			write(sockfd, buffer, sizeof(buffer));
 		}
 		
+		// met uin fichier dans le dossier en cours
 		if ((strncmp(buffer, "put", 3)) == 0) { 
-			printf("yo tu veux telecharger un fichier\n"); 
+			printf("yo tu veux rajouter un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
             bzero(namefile, MAX); 
@@ -384,8 +189,9 @@ void func(int sockfd)
 			write(sockfd, buffer, sizeof(buffer));
 		}
         
+		// envoie un fichier au client
         if ((strncmp(buffer, "get", 3)) == 0) { 
-            printf("yo tu veux rajouter un fichier\n"); 
+            printf("yo tu veux envoyer un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
             bzero(namefile, MAX); 
@@ -428,6 +234,8 @@ void func(int sockfd)
     } 
 } 
 
+
+
 // Main 
 int main() 
 { 
@@ -466,7 +274,7 @@ int main()
         printf("Ici la voix...\n"); 
     len = sizeof(cli); 
   
-    // Accept the data packet from client and verification 
+    // accepte les paquets de données du client
     connfd = accept(sockfd, (SA*)&cli, &len); 
     if (connfd < 0) { 
         printf("l'accpetation serveur a echoué...\n"); 

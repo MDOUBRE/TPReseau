@@ -37,7 +37,7 @@ void getNameFile(char* reponse, char* message, int nbCharAOublier){
 
 void func(int sockfd) 
 { 
-char buff[MAX]; 
+    char buff[MAX]; 
     FILE *f;
     int n;
     int lecture=0;
@@ -110,7 +110,7 @@ int main()
 { 
     int sockfd; 
     struct sockaddr_in servaddr;
-    // creation de socket
+    // creation et vérification du socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0); 
     if (sockfd == -1) { 
         printf("Creation de socket rate\n"); 
