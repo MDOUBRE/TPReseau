@@ -4,15 +4,15 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
-#include <sys/socket.h> 
+#include <sys/socket.h>
+
 #define MAX 500 
 #define PORT 8080 
 #define SA struct sockaddr 
 
 void func(int sockfd) 
 { 
-    char *buff;
-    buff=malloc(sizeof(int)*MAX); 
+char buff[MAX]; 
     FILE *f;
     int n;
     int lecture=0;
@@ -34,12 +34,12 @@ void func(int sockfd)
             for(i=4;i<strlen(buff);i++){ // on recupere le nom du fichier
 				namefile[i-3]=buff[i];
 			}
-			printf(namefile);
+			printf("%s\n",namefile);
             if((f = fopen(namefile,"r"))==NULL){
 				printf("impossible d'ouvrir le fichier en lecture");
 				break;
 			}
-			write(sockfd, buff, sizeof(buff)); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
+			write(sockfd, buff, MAX); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
 			fscanf(f,"%s",buff); // on met le fichier dans le buffer qui sera envoyer par la suite
         }
 
@@ -54,7 +54,7 @@ void func(int sockfd)
             for(i=4;i<strlen(buff);i++){ // on recupere le nom du fichier
 				namefile[i-3]=buff[i];
 			}
-			printf(namefile);
+			printf("%s\n",namefile);
             if((f = fopen(namefile,"w"))==NULL){
 				printf("impossible d'ouvrir le fichier en ecriture");
 				break;
