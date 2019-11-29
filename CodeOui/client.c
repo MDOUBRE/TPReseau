@@ -72,7 +72,9 @@ void func(int sockfd)
 			bzero(buff, MAX);
 			strcat(buff,"fin");
         }
+        
         write(sockfd, buff, MAX);
+
         if ((strncmp(buff, "get", 3)) == 0) { 
             ouvert=1;
 			printf("yo tu veux telecharger un fichier\n"); 
