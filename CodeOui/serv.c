@@ -242,15 +242,32 @@ int testApart(char* name, char* path){
 	return retour;
 }
 
+void removespace(char* line){
+    int i, j;
+    for(i = 0; line[i] != '\0'; ++i)
+    {
+        while (!( (line[i] >= 'a' && line[i] <= 'z') || (line[i] >= 'A' && line[i] <= 'Z') || line[i] == '\0') )
+        {
+            for(j = i; line[j] != '\0'; ++j)
+            {
+                line[j] = line[j+1];
+            }
+            line[j] = '\0';
+        }
+    }
+}
+
 void getNameFile(char* reponse, char* message, int nbCharAOublier){
 	int i=nbCharAOublier;
 	while(i<strlen(message) && message[i]!='\0' && message[i]!=' '){ // on recupere le nom du fichier
 		reponse[i-nbCharAOublier]=message[i];
 		i++;
 	}
-	reponse[strlen(reponse)-1]='\0';
+	removespace(reponse);
 	printf("longueur message : %d\n",strlen(reponse));
 }
+
+
 
 // Fonction de chat entre client et serveur
 void func(int sockfd) 
@@ -332,15 +349,23 @@ void func(int sockfd)
 			write(sockfd, buffer, sizeof(buffer));
 		}
 		
+		if (strncmp("pwd", buffer, 3) == 0) { 
+			bzero(buffer, MAX);
+			strcat(buffer,path);
+			strcat(buffer,"\n");
+			write(sockfd, buffer, sizeof(buffer));
+		}
+		
 		if ((strncmp(buffer, "put", 3)) == 0) { 
 			printf("yo tu veux telecharger un fichier\n"); 
             char namefile[MAX];
-            int i=4;
-            for(i=4;i<strlen(buffer);i++){ // on recupere le nom du fichier
-				namefile[i-3]=buffer[i];
-			}
+            char dest[MAX];
+            getNameFile(namefile,buffer,4);
+            strcpy(dest,path);
+            strcat(dest,"/");
+            strcat(dest,namefile);
 			printf("%s\n",namefile);
-            if((f = fopen(namefile,"w"))==NULL){
+            if((f = fopen(dest,"w"))==NULL){
 				printf("impossible d'ouvrir le fichier en ecriture");
 				break;
 			}
@@ -355,12 +380,12 @@ void func(int sockfd)
         if ((strncmp(buffer, "get", 3)) == 0) { 
             printf("yo tu veux rajouter un fichier\n"); 
             char namefile[MAX];
-            int i=4;
-            for(i=4;i<strlen(buffer);i++){ // on recupere le nom du fichier
-				namefile[i-3]=buffer[i];
-			}
-			printf("%s\n",namefile);
-            if((f = fopen(namefile,"r"))==NULL){
+            char dest[MAX];
+            getNameFile(namefile,buffer,4);
+            strcpy(dest,path);
+            strcat(dest,"/");
+            strcat(dest,namefile);
+            if((f = fopen(dest,"r"))==NULL){
 				printf("impossible d'ouvrir le fichier en lecture");
 				break;
 			}

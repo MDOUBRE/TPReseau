@@ -10,6 +10,31 @@
 #define PORT 8080 
 #define SA struct sockaddr 
 
+void removespace(char* line){
+    int i, j;
+    for(i = 0; line[i] != '\0'; ++i)
+    {
+        while (!( (line[i] >= 'a' && line[i] <= 'z') || (line[i] >= 'A' && line[i] <= 'Z') || line[i] == '\0') )
+        {
+            for(j = i; line[j] != '\0'; ++j)
+            {
+                line[j] = line[j+1];
+            }
+            line[j] = '\0';
+        }
+    }
+}
+
+void getNameFile(char* reponse, char* message, int nbCharAOublier){
+	int i=nbCharAOublier;
+	while(i<strlen(message) && message[i]!='\0' && message[i]!=' '){ // on recupere le nom du fichier
+		reponse[i-nbCharAOublier]=message[i];
+		i++;
+	}
+	removespace(reponse);
+	printf("longueur message : %d\n",strlen(reponse));
+}
+
 void func(int sockfd) 
 { 
 char buff[MAX]; 
@@ -29,11 +54,8 @@ char buff[MAX];
         if ((strncmp(buff, "put", 3)) == 0) { 
             ouvert=1;
             printf("yo tu veux rajouter un fichier\n"); 
-            char namefile[25];
-            int i=4;
-            for(i=4;i<strlen(buff);i++){ // on recupere le nom du fichier
-				namefile[i-3]=buff[i];
-			}
+            char namefile[MAX];
+            getNameFile(namefile,buff,4);
 			printf("%s\n",namefile);
             if((f = fopen(namefile,"r"))==NULL){
 				printf("impossible d'ouvrir le fichier en lecture");
@@ -49,11 +71,8 @@ char buff[MAX];
             ouvert=1;
 			printf("yo tu veux telecharger un fichier\n"); 
 			lecture=1;
-            char namefile[25];
-            int i=4;
-            for(i=4;i<strlen(buff);i++){ // on recupere le nom du fichier
-				namefile[i-3]=buff[i];
-			}
+            char namefile[MAX];
+            getNameFile(namefile,buff,4);
 			printf("%s\n",namefile);
             if((f = fopen(namefile,"w"))==NULL){
 				printf("impossible d'ouvrir le fichier en ecriture");
