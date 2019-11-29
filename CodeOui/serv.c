@@ -6,6 +6,7 @@
 #include <string.h> 
 #include <sys/socket.h> 
 #include <sys/types.h> 
+#include <dirent.h>
 #define MAX 500 
 #define PORT 8080 
 #define TAILLEMAX 100
@@ -238,6 +239,12 @@ void func(int sockfd)
             write(sockfd, buffer, sizeof(buffer));
         }
         
+        if (strncmp("liste", buffer, 4) == 0) { 
+			bzero(buffer, MAX);
+			strcat(buffer,"liste des commandes\n-ls\n-cd\n-pwd\n-get nomfichier\nput nomfichier\n");
+			write(sockfd, buffer, sizeof(buffer));
+		}
+        
         //efface le buffer
         
         /*
@@ -249,15 +256,16 @@ void func(int sockfd)
         // et envoie le buffer au client 
         write(sockfd, buffer, sizeof(buffer));      
 
-        
+        */
         
         // si le message contient "Exit"alors le serveur quitte et end la connection 
         if (strncmp("exit", buffer, 4) == 0) { 
             printf("Server Exit...\n"); 
+            bzero(buffer, MAX);
+			strcat(buffer,"exit");
+			write(sockfd, buffer, sizeof(buffer));
             break; 
         }   
-        */
-         
     } 
 } 
 

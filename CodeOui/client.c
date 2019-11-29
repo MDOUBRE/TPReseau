@@ -15,7 +15,6 @@ void func(int sockfd)
     buff=malloc(sizeof(int)*MAX); 
     FILE *f;
     int n;
-    char c;
     int lecture=0;
     int ouvert=0;
 
