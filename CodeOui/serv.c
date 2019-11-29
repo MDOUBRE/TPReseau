@@ -179,7 +179,6 @@ void func(int sockfd)
 			read(sockfd, buffer, MAX); 
 			while((strncmp(buffer, "fin", 3)) != 0){
 				fputs(buffer,f);
-				printf("oui\n");
 				bzero(buffer, MAX);
 				read(sockfd, buffer, MAX);
 			}
@@ -205,9 +204,14 @@ void func(int sockfd)
 				break;
 			}
 			bzero(buffer, MAX);
-			//write(sockfd, buff, sizeof(buff)); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
-			fscanf(f,"%s",buffer); // on met le fichier dans le buffer qui sera envoyer par la suite
-			write(sockfd, buffer, sizeof(buffer));
+			write(sockfd, buffer, MAX);
+			while(fgets(buffer,MAX,f)!=NULL){
+				write(sockfd, buffer, MAX);
+				bzero(buffer, MAX); 
+			}
+			bzero(buffer, MAX);
+			strcat(buffer,"fin");
+			write(sockfd, buffer, MAX);
 		}
         
         //efface le buffer

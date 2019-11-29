@@ -72,7 +72,9 @@ void func(int sockfd)
 			bzero(buff, MAX);
 			strcat(buff,"fin");
         }
+        
         write(sockfd, buff, MAX);
+        
         if ((strncmp(buff, "get", 3)) == 0) { 
             ouvert=1;
 			printf("yo tu veux telecharger un fichier\n"); 
@@ -88,10 +90,13 @@ void func(int sockfd)
 		}
 
         bzero(buff, MAX);
-
-        read(sockfd, buff, MAX);
+        read(sockfd, buff, MAX); 
         if(lecture==1){
-			fprintf(f,"%s",buff); // on créé le fichier a partir du buffer
+			while((strncmp(buff, "fin", 3)) != 0){
+				fputs(buff,f);
+				bzero(buff, MAX);
+				read(sockfd, buff, MAX);
+			}
 			lecture=0;
 		}
         if(ouvert==1){
@@ -99,7 +104,7 @@ void func(int sockfd)
             ouvert=0;
         }
         printf("Reponse du serveur :\n %s\n", buff);
-        if ((strncmp(buff, "exit", 4)) == 0) { 
+        if ((strncmp(buff, "exit", 4)) == 0) {
             printf("Client Exit...\n"); 
             break; 
         }
