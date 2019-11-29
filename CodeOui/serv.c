@@ -265,7 +265,7 @@ int main()
         printf("Ici la voix...\n"); 
     len = sizeof(cli); 
   
-    // Accept the data packet from client and verification 
+    // accepte les paquets de données du client
     connfd = accept(sockfd, (SA*)&cli, &len); 
     if (connfd < 0) { 
         printf("l'accpetation serveur a echoué...\n"); 

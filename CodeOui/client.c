@@ -103,7 +103,7 @@ int main()
 { 
     int sockfd; 
     struct sockaddr_in servaddr;
-    // creation de socket
+    // creation et vérification du socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0); 
     if (sockfd == -1) { 
         printf("Creation de socket rate\n"); 
