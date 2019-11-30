@@ -27,8 +27,14 @@ char *listdir(const char *path)
 	
 	while((entry=readdir(dp)))
 	{
-		strcat(tab,entry->d_name);
-		strcat(tab,"\n");
+		if(entry->d_type != DT_DIR){
+			strcat(tab,entry->d_name);
+			strcat(tab,"\n");
+		}else{
+			strcat(tab,"*");
+			strcat(tab,entry->d_name);
+			strcat(tab,"\n");
+		}
 	}
 	
 	closedir(dp);
@@ -48,12 +54,12 @@ int testApart(char* name, char* path){
 	}
 	printf("name pas a pas \n");
 	while(i<strlen(name)){
-		printf("%c\n",name[i]);
+		printf("%c %d\n",name[i],name[i]);
 		i++;
 	}
 	while((entry=readdir(dp)))
 	{
-		if(strcmp(entry->d_name,name)==0){
+		if((strcmp(entry->d_name,name)==0) && (entry->d_type == DT_DIR)){ // if(entry->d_type != DT_DIR){
 			retour=0;
 			printf("je suis passé\n");
 		}
@@ -74,15 +80,13 @@ int testApart(char* name, char* path){
 // fct pour supprimer les espaces
 void removespace(char* line){
     int i, j;
-    for(i = 0; line[i] != '\0'; ++i)
-    {
-        while (!( (line[i] >= 'a' && line[i] <= 'z') || (line[i] >= 'A' && line[i] <= 'Z') || line[i] == '\0') )
-        {
-            for(j = i; line[j] != '\0'; ++j)
-            {
+    for(i = 0; line[i] != '\0'; ++i){
+        while (!( (line[i] >= 33 && line[i] <= 123) || line[i] == '\0')){
+            for(j = i; line[j] != '\0'; ++j){
                 line[j] = line[j+1];
             }
             line[j] = '\0';
+            printf("test\n");
         }
     }
 }
@@ -108,7 +112,7 @@ void func(int sockfd)
     char buffer[MAX]; 
     FILE *f;
 	char path[MAX]=".";
-        
+    int commande=0;
     // boucle infinie pour l'execution du programme
     while (1) { 
         bzero(buffer, MAX);
@@ -123,22 +127,48 @@ void func(int sockfd)
         
 		// si le message contient cd alors vérifie le chemin et va dans le dossier souhaité
         if (strncmp("cd", buffer, 2) == 0) { 
+			commande=1;
         	printf("buffer : %s\n",buffer);
         	char namefile[MAX];
+        	bzero(namefile, MAX);
             getNameFile(namefile,buffer,3);
-			if(testApart(namefile,path)==0){
-				strcat(path,"/");
-				strcat(path,namefile);
+            if(strcmp(namefile,"..")==0 || strcmp(namefile,".")==0){
+				if(strlen(path)>2 && strcmp(namefile,".")!=0){
+					int i;
+					for(i=strlen(path);path[i]!='/';--i){
+						path[i]=' ';
+						
+					}
+					path[i]='\0';
+					bzero(buffer, MAX);
+					strcat(buffer,"cd fait\n");
+					write(sockfd, buffer, sizeof(buffer));
+				}else{
+					bzero(buffer, MAX);
+					strcat(buffer,"cd impossible\n");
+					write(sockfd, buffer, sizeof(buffer));
+				}
+			}else{
+				if(testApart(namefile,path)==0){
+					strcat(path,"/");
+					strcat(path,namefile);
+					bzero(buffer, MAX);
+					strcat(buffer,"cd fait\n");
+					write(sockfd, buffer, sizeof(buffer));
+				}else{
+					bzero(buffer, MAX);
+					strcat(buffer,"dossier inconnu\n");
+					write(sockfd, buffer, sizeof(buffer));
+				}
 			}
-			bzero(buffer, MAX);
+			
 			printf("ici le path : %s\n",path);
-			strcat(buffer,"cd fait\n");
-			write(sockfd, buffer, sizeof(buffer));
+			
         }  
         
         // si le message contient ls alors affiche tous les dossieres et fichiers contenu dans le repertoire
         if (strncmp("ls", buffer, 2) == 0) { 
-			//efface le buffer
+			commande=1;
 			bzero(buffer, MAX);
             tmp=listdir(path);
             sprintf(buffer,tmp,MAX);
@@ -147,6 +177,7 @@ void func(int sockfd)
         
 		// renvoie la liste des commandes
         if (strncmp("liste", buffer, 4) == 0) { 
+			commande=1;
 			bzero(buffer, MAX);
 			strcat(buffer,"liste des commandes\n-ls\n-cd\n-pwd\n-get nomfichier\nput nomfichier\n");
 			write(sockfd, buffer, sizeof(buffer));
@@ -154,6 +185,7 @@ void func(int sockfd)
 		
 		// renvoie le dossier dans lequel on est
 		if (strncmp("pwd", buffer, 3) == 0) { 
+			commande=1;
 			bzero(buffer, MAX);
 			strcat(buffer,path);
 			strcat(buffer,"\n");
@@ -162,6 +194,7 @@ void func(int sockfd)
 		
 		// met un fichier dans le dossier en cours
 		if ((strncmp(buffer, "put", 3)) == 0) { 
+			commande=1;
 			printf("yo tu veux rajouter un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
@@ -190,6 +223,7 @@ void func(int sockfd)
         
 		// envoie un fichier au client
         if ((strncmp(buffer, "get", 3)) == 0) { 
+			commande=1;
             printf("yo tu veux envoyer un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
@@ -214,28 +248,21 @@ void func(int sockfd)
 			write(sockfd, buffer, MAX);
 		}
         
-        //efface le buffer
-        
-        /*
-        bzero(buffer, MAX); 
-        n = 0; 
-        // copie le message du serveur dans le buffer 
-        while ((buffer[n++] = getchar()) != '\n'); 
-  
-        // et envoie le buffer au client 
-        write(sockfd, buffer, sizeof(buffer));      
-
-        */
-        
-        // si le message contient "Exit"alors le serveur quitte et end la connection 
         if (strncmp("exit", buffer, 4) == 0) { 
+			commande=1;
             printf("Server Exit...\n"); 
             bzero(buffer, MAX);
 			strcat(buffer,"exit");
 			write(sockfd, buffer, sizeof(buffer));
             break; 
         }   
-    } 
+        if(commande==0){
+			bzero(buffer, MAX);
+			strcat(buffer,"commande inconnu\n");
+			write(sockfd, buffer, sizeof(buffer));
+		}
+		commande=0;
+    }
 } 
 
 

@@ -39,6 +39,7 @@ void func(int sockfd)
 { 
     char buff[MAX]; 
     FILE *f;
+    char path[MAX]=".";
     int n;
     int lecture=0;
     int ouvert=0;
@@ -50,7 +51,13 @@ void func(int sockfd)
         
         //while ((buff[n++] = getchar()) != '\n'); //gros seg fault la j'ai essayee ce qu'on avait de base le scanf le fgets de malloc le buff aussi
         while ((buff[n++] = getchar()) != '\n');
-
+		if ((strncmp(buff, "lls", 3)) == 0) { 
+			bzero(buffer, MAX);
+            tmp=listdir(path);
+            sprintf(buffer,tmp,MAX);
+            write(stdout, buffer, sizeof(buffer));
+		
+		}
         if ((strncmp(buff, "put", 3)) == 0) { 
             ouvert=1;
             printf("yo tu veux rajouter un fichier\n"); 
