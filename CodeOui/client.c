@@ -81,7 +81,7 @@ void func(int sockfd)
     printf("%s\n",buff);
 	bzero(buff,MAX);
 	bzero(prenom,20);
-	scanf("%s\n",prenom);
+	scanf("%s",prenom);
 	strcat(buff,prenom);
     write(sockfd,buff,MAX);
     read(sockfd,buff,MAX);
