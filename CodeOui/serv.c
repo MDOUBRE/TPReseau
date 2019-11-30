@@ -42,7 +42,8 @@ char *listdir(const char *path)
 }
 
 // test d'appartenance d'un dossier au celui dna slequel on est
-int testApart(char* name, char* path){
+int testApart(char* name, char* path)
+{
 	struct dirent *entry;
 	DIR *dp;
 	int retour=-1;
@@ -78,7 +79,8 @@ int testApart(char* name, char* path){
 }
 
 // fct pour supprimer les espaces
-void removespace(char* line){
+void removespace(char* line)
+{
     int i, j;
     for(i = 0; line[i] != '\0'; ++i){
         while (!( (line[i] >= 33 && line[i] <= 123) || line[i] == '\0')){
@@ -92,7 +94,8 @@ void removespace(char* line){
 }
 
 // fct pour obtenir le nom d'un fichier
-void getNameFile(char* reponse, char* message, int nbCharAOublier){
+void getNameFile(char* reponse, char* message, int nbCharAOublier)
+{
 	int i=nbCharAOublier;
 	while(i<strlen(message) && message[i]!='\0' && message[i]!=' '){ // on recupere le nom du fichier
 		reponse[i-nbCharAOublier]=message[i];
@@ -102,17 +105,70 @@ void getNameFile(char* reponse, char* message, int nbCharAOublier){
 	printf("longueur message : %d\n",strlen(reponse));
 }
 
+char **fctlisteUtil(char **tab, int n, int m)
+{
+	
+	tab[0]="Maxime";
+	tab[1]="Nicolas";
+	tab[2]="Felix";
+	tab[3]="Baptiste";
+	tab[4]="Alexis";
+	tab[5]="Hugo";
+	tab[6]="Marie";
+	tab[7]="Louis";
+	tab[8]="Julien";
+	tab[9]="Gabriel";
+	tab[10]="Vincent";
+	
+	return tab;
+}
 
+int compare(char **liste, char *buffer)
+{
+
+}
 
 
 // Fonction de réponse du serveur
-void func(int sockfd) 
+int func(int sockfd) 
 { 
 
     char buffer[MAX]; 
     FILE *f;
 	char path[MAX]=".";
     int commande=0;
+	char **listeUtil;
+	int i;
+	int n=11;	// nombre de personnes 
+	int m=20;	// nombre caractères max par prénom
+	listeUtil=malloc(sizeof(char)*n);	
+	for(i=0;i<n;i++)
+	{
+		listeUtil[i]=malloc(sizeof(char)*m);		
+	}	
+	
+	listeUtil=fctlisteUtil(listeUtil,n,m);
+	
+	bzero(buffer,MAX);
+	strcat(buffer,"entrez vorte Prénom");
+	write(sockfd,buffer,MAX);
+	bzero(buffer,MAX);
+	read(sockfd, buffer, MAX);
+	if(compare(listeUtil,buffer)==-1)
+	{
+		printf("Server Exit...\n"); 
+		bzero(buffer, MAX);
+		strcat(buffer,"exit");
+		write(sockfd, buffer, MAX);
+		return -1; 
+	}
+	else
+	{
+		printf("ok\n");
+		bzero(buffer,MAX);
+		strcat(buffer,"vous êtes autorisé");
+		write(sockfd,buffer,MAX);
+	}
     // boucle infinie pour l'execution du programme
     while (1) { 
         bzero(buffer, MAX);
@@ -263,6 +319,8 @@ void func(int sockfd)
 		}
 		commande=0;
     }
+    } 
+	return 0;
 } 
 
 
