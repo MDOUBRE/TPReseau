@@ -39,19 +39,52 @@ char *listdir(const char *path)
 	return tab;
 }
 
+int testApart(char* name, char* path)
+{
+	struct dirent *entry;
+	DIR *dp;
+	int retour=-1;
+	int i=0;
+	dp=opendir(path);
+	if(dp==NULL)
+	{
+		perror("opendir");
+	}
+	printf("name pas a pas \n");
+	while(i<strlen(name)){
+		printf("%c %d\n",name[i],name[i]);
+		i++;
+	}
+	while((entry=readdir(dp)))
+	{
+		if((strcmp(entry->d_name,name)==0) && (entry->d_type == DT_DIR)){ // if(entry->d_type != DT_DIR){
+			retour=0;
+			printf("je suis passé\n");
+		}
+		printf("truc pas a pas \n");
+		i=0;
+		while(i<strlen(entry->d_name)){
+			printf("%c\n",entry->d_name[i]);
+			i++;
+		}
+		printf("entry dname : %s\n",entry->d_name);
+		printf("name : %s\n",name);
+	}
+	
+	closedir(dp);
+	return retour;
+}
 
-
-void removespace(char* line){
+void removespace(char* line)
+{
     int i, j;
-    for(i = 0; line[i] != '\0'; ++i)
-    {
-        while (!( (line[i] >= 'a' && line[i] <= 'z') || (line[i] >= 'A' && line[i] <= 'Z') || line[i] == '\0') )
-        {
-            for(j = i; line[j] != '\0'; ++j)
-            {
+    for(i = 0; line[i] != '\0'; ++i){
+        while (!( (line[i] >= 33 && line[i] <= 123) || line[i] == '\0')){
+            for(j = i; line[j] != '\0'; ++j){
                 line[j] = line[j+1];
             }
             line[j] = '\0';
+            printf("test\n");
         }
     }
 }
@@ -85,8 +118,11 @@ void func(int sockfd)
 	strcat(buff,prenom);
     write(sockfd,buff,MAX);
     read(sockfd,buff,MAX);
-    printf("%s\n",buff);
-
+    if ((strncmp(buff, "exit", 4)) == 0) {
+		printf("Client Exit...\n"); 
+		return; 
+	}
+	fflush(stdout);
 
     while(1) { 
         bzero(buff, MAX); 
@@ -99,20 +135,69 @@ void func(int sockfd)
         while ((buff[n++] = getchar()) != '\n');
         
 		if ((strncmp(buff, "lls", 3)) == 0) { 
+			
 			bzero(buff, MAX);
             tmp=listdir(path);
             sprintf(buff,tmp,MAX);
-            write(stdout, buff, sizeof(buff));
+            printf("%s\n",buff);
+            
+		}else if ((strncmp(buff, "lcd", 3)) == 0){
+			
+        	printf("buffer : %s\n",buff);
+        	char namefile[MAX];
+        	bzero(namefile, MAX);
+            getNameFile(namefile,buff,4);
+            if(strcmp(namefile,"..")==0 || strcmp(namefile,".")==0){
+				if(strlen(path)>2 && strcmp(namefile,".")!=0){
+					int i;
+					for(i=strlen(path);path[i]!='/';--i){
+						path[i]=' ';
+						
+					}
+					path[i]='\0';
+					bzero(buff, MAX);
+					strcat(buff,"cd fait\n");
+					printf("%s\n",buff);
+				}else{
+					bzero(buff, MAX);
+					strcat(buff,"cd impossible\n");
+					printf("%s\n",buff);
+				}
+			}else{
+				if(testApart(namefile,path)==0){
+					strcat(path,"/");
+					strcat(path,namefile);
+					bzero(buff, MAX);
+					strcat(buff,"cd fait\n");
+					printf("%s\n",buff);
+				}else{
+					bzero(buff, MAX);
+					strcat(buff,"dossier inconnu\n");
+					printf("%s\n",buff);
+				}
+			}
+			printf("ici le path : %s\n",path);
+			
+		}else if((strncmp(buff, "lpwd", 4)) == 0){
+			bzero(buff, MAX);
+			strcat(buff,path);
+			strcat(buff,"\n");
+			printf("%s\n",buff);
 		}else{
 			if ((strncmp(buff, "put", 3)) == 0) { 
 				ouvert=1;
 				printf("yo tu veux rajouter un fichier\n"); 
 				char namefile[MAX];
-				bzero(namefile, MAX); 
+				char dest[MAX];
+				bzero(namefile, MAX);
+				bzero(dest,MAX) ;
 				getNameFile(namefile,buff,4);
 				printf("%s\n",namefile);
 				printf("oui\n");
-				if((f = fopen(namefile,"r"))==NULL){
+				strcat(dest,path);
+				strcat(dest,"/");
+				strcat(dest,namefile);
+				if((f = fopen(dest,"r"))==NULL){
 					printf("impossible d'ouvrir le fichier en lecture");
 					break;
 				}
@@ -133,10 +218,15 @@ void func(int sockfd)
 				printf("yo tu veux telecharger un fichier\n"); 
 				lecture=1;
 				char namefile[MAX];
+				char dest[MAX];
+				bzero(dest,MAX) ;
 				bzero(namefile, MAX); 
 				getNameFile(namefile,buff,4);
 				printf("%s\n",namefile);
-				if((f = fopen(namefile,"w"))==NULL){
+				strcat(dest,path);
+				strcat(dest,"/");
+				strcat(dest,namefile);
+				if((f = fopen(dest,"w"))==NULL){
 					printf("impossible d'ouvrir le fichier en ecriture");
 					break;
 				}
