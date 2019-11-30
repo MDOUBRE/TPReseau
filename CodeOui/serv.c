@@ -125,7 +125,15 @@ char **fctlisteUtil(char **tab, int n, int m)
 
 int compare(char **liste, char *buffer)
 {
-
+	int i,j;
+	int result=-1;
+	for(i=0;i<11;i++){
+		if(strcmp(tab[i],buffer)==0)
+		{
+			result=0;
+		}
+	}
+	return result;
 }
 
 
