@@ -27,7 +27,7 @@ void removespace(char* line){
 
 void getNameFile(char* reponse, char* message, int nbCharAOublier){
 	int i=nbCharAOublier;
-	while(i<strlen(message) && message[i]!='\0' && message[i]!=' '){ // on recupere le nom du fichier
+	while(i<strlen(message) && message[i]!='\0' && message[i]!=' '){
 		reponse[i-nbCharAOublier]=message[i];
 		i++;
 	}
