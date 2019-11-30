@@ -42,12 +42,27 @@ void func(int sockfd)
     int n;
     int lecture=0;
     int ouvert=0;
+    char prenom[20];
+
+    bzero(buff,MAX);
+    read(sockfd, buff, MAX);
+    printf("%s\n",buff);
+	bzero(buff,MAX);
+	bzero(prenom,20);
+	scanf("%s\n",prenom);
+	strcat(buff,prenom);
+    write(sockfd,buff,MAX);
+    read(sockfd,buff,MAX);
+    printf("%s\n",buff);
+
 
     while(1) { 
         bzero(buff, MAX); 
         printf("Entrer une commande (liste pour la liste des commandes) : \n"); 
         n = 0; 
-        
+
+
+
         //while ((buff[n++] = getchar()) != '\n'); //gros seg fault la j'ai essayee ce qu'on avait de base le scanf le fgets de malloc le buff aussi
         while ((buff[n++] = getchar()) != '\n');
 
