@@ -319,7 +319,6 @@ int func(int sockfd)
 		}
 		commande=0;
     }
-    } 
 	return 0;
 } 
 
