@@ -44,7 +44,7 @@ char *listdir(const char *path)
 	return tab;
 }
 
-// test d'appartenance d'un dossier au celui dna slequel on est
+// test d'appartenance d'un dossier au celui dans lequel on est
 int testApart(char* name, char* path)
 {
 	struct dirent *entry;
