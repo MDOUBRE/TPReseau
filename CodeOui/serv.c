@@ -53,25 +53,12 @@ int testApart(char* name, char* path)
 	{
 		perror("opendir");
 	}
-	printf("name pas a pas \n");
-	while(i<strlen(name)){
-		printf("%c %d\n",name[i],name[i]);
-		i++;
-	}
+	
 	while((entry=readdir(dp)))
 	{
 		if((strcmp(entry->d_name,name)==0) && (entry->d_type == DT_DIR)){ // if(entry->d_type != DT_DIR){
 			retour=0;
-			printf("je suis passé\n");
 		}
-		printf("truc pas a pas \n");
-		i=0;
-		while(i<strlen(entry->d_name)){
-			printf("%c\n",entry->d_name[i]);
-			i++;
-		}
-		printf("entry dname : %s\n",entry->d_name);
-		printf("name : %s\n",name);
 	}
 	
 	closedir(dp);
@@ -88,7 +75,6 @@ void removespace(char* line)
                 line[j] = line[j+1];
             }
             line[j] = '\0';
-            printf("test\n");
         }
     }
 }
@@ -102,7 +88,6 @@ void getNameFile(char* reponse, char* message, int nbCharAOublier)
 		i++;
 	}
 	removespace(reponse);
-	printf("longueur message : %d\n",strlen(reponse));
 }
 
 char **fctlisteUtil(char **tab, int n, int m)
@@ -186,13 +171,11 @@ int func(int sockfd)
         read(sockfd, buffer, MAX); 
         
 		// print le buffer qui copntient le contenu du client
-        printf("bonsoir\n");
         fflush(stdout); //gros segfault ici si on  remet le printf ?
         
 		// si le message contient cd alors vérifie le chemin et va dans le dossier souhaité
         if (strncmp("cd", buffer, 2) == 0) { 
 			commande=1;
-        	printf("buffer : %s\n",buffer);
         	char namefile[MAX];
         	bzero(namefile, MAX);
             getNameFile(namefile,buffer,3);
@@ -243,7 +226,7 @@ int func(int sockfd)
         if (strncmp("liste", buffer, 4) == 0) { 
 			commande=1;
 			bzero(buffer, MAX);
-			strcat(buffer,"liste des commandes\n-ls\n-cd\n-pwd\n-get nomfichier\nput nomfichier\n");
+			strcat(buffer,"liste des commandes\n-ls\n-cd\n-pwd\n-get nomfichier\n-put nomfichier\n-exit\n");
 			write(sockfd, buffer, sizeof(buffer));
 		}
 		
@@ -259,7 +242,6 @@ int func(int sockfd)
 		// met un fichier dans le dossier en cours
 		if ((strncmp(buffer, "put", 3)) == 0) { 
 			commande=1;
-			printf("yo tu veux rajouter un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
             bzero(namefile, MAX); 
@@ -288,7 +270,6 @@ int func(int sockfd)
 		// envoie un fichier au client
         if ((strncmp(buffer, "get", 3)) == 0) { 
 			commande=1;
-            printf("yo tu veux envoyer un fichier\n"); 
             char namefile[MAX];
             char dest[MAX];
             bzero(namefile, MAX); 

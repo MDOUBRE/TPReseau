@@ -50,25 +50,12 @@ int testApart(char* name, char* path)
 	{
 		perror("opendir");
 	}
-	printf("name pas a pas \n");
-	while(i<strlen(name)){
-		printf("%c %d\n",name[i],name[i]);
-		i++;
-	}
+
 	while((entry=readdir(dp)))
 	{
 		if((strcmp(entry->d_name,name)==0) && (entry->d_type == DT_DIR)){ // if(entry->d_type != DT_DIR){
 			retour=0;
-			printf("je suis passé\n");
 		}
-		printf("truc pas a pas \n");
-		i=0;
-		while(i<strlen(entry->d_name)){
-			printf("%c\n",entry->d_name[i]);
-			i++;
-		}
-		printf("entry dname : %s\n",entry->d_name);
-		printf("name : %s\n",name);
 	}
 	
 	closedir(dp);
@@ -83,8 +70,7 @@ void removespace(char* line)
             for(j = i; line[j] != '\0'; ++j){
                 line[j] = line[j+1];
             }
-            line[j] = '\0';
-            printf("test\n");
+            line[j] = '\0'; 
         }
     }
 }
@@ -96,7 +82,6 @@ void getNameFile(char* reponse, char* message, int nbCharAOublier){
 		i++;
 	}
 	removespace(reponse);
-	printf("longueur message : %d\n",strlen(reponse));
 }
 
 void func(int sockfd) 
@@ -142,8 +127,6 @@ void func(int sockfd)
             printf("%s\n",buff);
             
 		}else if ((strncmp(buff, "lcd", 3)) == 0){
-			
-        	printf("buffer : %s\n",buff);
         	char namefile[MAX];
         	bzero(namefile, MAX);
             getNameFile(namefile,buff,4);
@@ -176,7 +159,6 @@ void func(int sockfd)
 					printf("%s\n",buff);
 				}
 			}
-			printf("ici le path : %s\n",path);
 			
 		}else if((strncmp(buff, "lpwd", 4)) == 0){
 			bzero(buff, MAX);
@@ -186,14 +168,12 @@ void func(int sockfd)
 		}else{
 			if ((strncmp(buff, "put", 3)) == 0) { 
 				ouvert=1;
-				printf("yo tu veux rajouter un fichier\n"); 
 				char namefile[MAX];
 				char dest[MAX];
 				bzero(namefile, MAX);
 				bzero(dest,MAX) ;
 				getNameFile(namefile,buff,4);
 				printf("%s\n",namefile);
-				printf("oui\n");
 				strcat(dest,path);
 				strcat(dest,"/");
 				strcat(dest,namefile);
@@ -203,7 +183,6 @@ void func(int sockfd)
 				}
 				write(sockfd, buff, MAX); // on envoie la commande pour que le serveur sache qu'il doit attendre un fichier
 				while(fgets(buff,MAX,f)!=NULL){
-					printf("oui\n");
 					write(sockfd, buff, MAX);
 					bzero(buff, MAX); 
 				} 
@@ -215,7 +194,6 @@ void func(int sockfd)
 			
 			if ((strncmp(buff, "get", 3)) == 0) { 
 				ouvert=1;
-				printf("yo tu veux telecharger un fichier\n"); 
 				lecture=1;
 				char namefile[MAX];
 				char dest[MAX];
