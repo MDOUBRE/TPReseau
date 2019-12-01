@@ -4,7 +4,7 @@ Utilisation du makefile :
 "make serv" pour compiler l'executable serveur
 "make clean" pour supprimer les executables
 
-Pour executer il faut d'abord lancer le serveur puis le clinet ensuite le client demandera un nom, si le nom donné fait parti de la liste le client continu avec une connexion au serveur normal sinon il ferme le client et le serveur.
+Pour executer il faut d'abord lancer le serveur puis le client. Ensuite le client demandera un nom, si le nom donné fait parti de la liste le client continue avec une connexion au serveur normal sinon il ferme le client et le serveur.
 
 Une fois le serveur et le client lancé toute les commandes ce font coté client
 Les commandes :
